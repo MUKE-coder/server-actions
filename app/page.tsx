@@ -1,113 +1,147 @@
-import Image from "next/image";
+"use client";
+import Admin from "@/components/Admin";
+import Button from "@/components/Button";
+import CustomButton from "@/components/CustomButton";
+import Employee from "@/components/Employee";
+import Product from "@/components/Product";
+import Products from "@/components/Products";
+import ProductsContainer from "@/components/ProductsContainer";
+import { EmployeeProps } from "@/types/types";
+import { Loader, Mail } from "lucide-react";
+import Link from "next/link";
+import { FormEvent, useRef, useState } from "react";
 
 export default function Home() {
+  //By DEFAULT the type of useState is inferred
+  const [loading, setLoading] = useState<boolean>(true);
+  type Status = "idle" | "loading" | "success" | "error";
+
+  const [status, setStatus] = useState<Status>("idle");
+  const [user, setUser] = useState<EmployeeProps | null>(null);
+  // REFS
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const departmentRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // FORM SUBMISSION
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const name = nameRef.current?.value;
+    const email = emailRef.current?.value;
+    const department = departmentRef.current?.value;
+    const id = Math.floor(Math.random() * 100);
+    if (name && email && department && id) {
+      const newUser: EmployeeProps = {
+        id,
+        name,
+        email,
+        department,
+      };
+      setUser(newUser);
+    }
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <section className="min-h-screen max-7xl mx-auto py-16 bg-slate-950 text-slate-200">
+      <div className=" flex items-center justify-center  flex-col">
+        <h2 className="text-5xl">Advanced TypeScript for Next.js Developers</h2>
+        <div className="">
+          <h3 className="text-3xl pt-8">Most Used Concepts in Next Js </h3>
+          <ul className="py-2 list-disc">
+            <li>Component Props</li>
+            <li>Types for Dynamic Routes</li>
+            <li>Re-Usable Types</li>
+            <li>UseSate</li>
+            <li>Refs and Events Types</li>
+            <li>Element Wrapper</li>
+            <li>Creating advanced Custom Button Element</li>
+          </ul>
         </div>
+        <div className="py-8">
+          <Button title="Add to Cart" loading={loading} />
+        </div>
+        <Products />
+        <ProductsContainer>
+          <div className="flex justify-between items-center py-6">
+            <h2 className="text-3xl">Popular Products</h2>
+            <Link
+              className="bg-slate-200 text-slate-800 text-xl py-2.5 px-6 rounded-md"
+              href="#"
+            >
+              See All
+            </Link>
+          </div>
+          <Products />
+        </ProductsContainer>
+        <ProductsContainer>
+          <section className="py-8">
+            <h2>Welcome to New Section</h2>
+          </section>
+          <div className="py-4">
+            <Admin adminNo={123445} name="Waswa Deo" email="admin@admin.com" />
+          </div>
+          <div className="py-4">
+            {user && (
+              <Employee
+                department={user?.department}
+                id={user?.id}
+                name={user?.name}
+                email={user?.email}
+              />
+            )}
+          </div>
+        </ProductsContainer>
+        <ProductsContainer>
+          <form
+            onSubmit={handleSubmit}
+            ref={formRef}
+            className="flex flex-col gap-4 mx-auto max-w-3xl"
+          >
+            <input
+              className="p-3 text-slate-900"
+              type="text"
+              placeholder="name"
+              ref={nameRef}
+            />
+            <input
+              className="p-3 text-slate-900"
+              type="email"
+              placeholder="email"
+              ref={emailRef}
+            />
+            <input
+              className="p-3 text-slate-900"
+              type="text"
+              placeholder="department"
+              ref={departmentRef}
+            />
+            <button className="bg-blue-500 text-white py-3 px-6 rounded">
+              Create User
+            </button>
+          </form>
+        </ProductsContainer>
+        <ProductsContainer>
+          <div className="py-8 flex gap-4">
+            <CustomButton
+              href="/products/1"
+              icon={<Mail />}
+              title="Download"
+              className="bg-lime-400 text-slate-900 py-3 px-6"
+            />
+            <CustomButton
+              variant="primary"
+              title="Loading"
+              icon={<Loader className="animate-spin" />}
+            />
+            <CustomButton
+              onClick={() => alert("Its working")}
+              title="Get Started"
+              variant="secondary"
+            />
+          </div>
+        </ProductsContainer>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </section>
   );
 }
