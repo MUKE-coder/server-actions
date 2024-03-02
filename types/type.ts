@@ -4,8 +4,8 @@ export interface IRegisterFormData {
   password: string;
 }
 
-export type Project={
-  title:string;
-  description:string;
-  slug:string;
-}
+export type Project = {
+  title: string;
+  description: string;
+  slug?: string;
+};

@@ -1,23 +1,19 @@
 "use client";
+import { createNewProject } from "@/actions/projects";
 import { ProjectSchema } from "@/schemas/schema";
 import { type Project } from "@/types/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-
-export default function ProjectForm() {
+// import { revalidatePath } from "next/cache";
+export default function ProjectFormActions() {
+  const [loading, setLoading] = useState(false);
   // Add your react hookform
   //Add zod
   //Server action || API Routes
-
-  function handleFormSubmit(data: Project) {
-    console.log(data);
-
-    //API ROUTE
-
-    //SERVER ACTION
-  }
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -26,6 +22,17 @@ export default function ProjectForm() {
   } = useForm<Project>({
     resolver: zodResolver(ProjectSchema),
   });
+  async function handleFormSubmit(data: Project) {
+    console.log(data);
+    setLoading(true);
+    //SERVER ACTION => Fxn run on the server side to do datatabase mutation (modify data)
+    try {
+      await createNewProject(data);
+      router.refresh();
+      router.push("/");
+    } catch (error) {}
+  }
+
   return (
     <form className="space-y-6" onSubmit={handleSubmit(handleFormSubmit)}>
       <h5 className="text-xl font-medium text-gray-900 dark:text-white">
@@ -71,12 +78,22 @@ export default function ProjectForm() {
         )}
       </div>
 
-      <button
-        type="submit"
-        className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Create Project
-      </button>
+      {loading ? (
+        <button
+          disabled
+          className="flex items-center w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          <Loader className="animate-spin mr-2" />
+          Creating please wait ...
+        </button>
+      ) : (
+        <button
+          type="submit"
+          className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Create Project
+        </button>
+      )}
     </form>
   );
 }
