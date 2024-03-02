@@ -21,3 +21,20 @@ export const registerFormSchema = z.object({
       message: "Password too short - should be 6 chars minimum",
     }),
 });
+
+export const ProjectSchema = z.object({
+  title: z
+    .string({
+      required_error: "Title is required",
+    })
+    .min(3, {
+      message: "Project title must be atleast 3 characters",
+    }),
+  description: z
+    .string({
+      required_error: "Description is required",
+    })
+    .min(3, {
+      message: "Description  must be atleast 3 characters",
+    }),
+});
